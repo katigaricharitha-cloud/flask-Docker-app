@@ -3,46 +3,50 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage("Checkout") {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo.git'
+                echo "===== Checking out code ====="
+                checkout scm
             }
         }
 
-        stage('Clean Workspace') {
+        stage("Clean Workspace") {
             steps {
+                echo "===== Cleaning workspace ====="
                 cleanWs()
             }
         }
 
-        stage('Build Docker Image') {
+        stage("Build Docker Image") {
             steps {
-                sh 'docker build -t sqlite-app .'
+                echo "===== Building Docker image ====="
+                bat 'docker build -t userresource-app:latest .'
             }
         }
 
-        stage('Stop Old Container') {
+        stage("Stop Old Container") {
             steps {
-                sh 'docker stop app || true'
-                sh 'docker rm app || true'
+                echo "===== Stopping old container ====="
+                bat 'docker stop user-container || exit 0'
+                bat 'docker rm user-container || exit 0'
             }
         }
 
-        stage('Run Container') {
+        stage("Run Container") {
             steps {
-                sh 'docker run -d -p 5000:5000 --name app sqlite-app'
+                echo "===== Running new container ====="
+                bat 'docker run -d -p 8081:5000 --name user-container userresource-app:latest'
             }
         }
-
     }
 
     post {
         success {
-            echo 'Build and Deployment SUCCESS'
+            echo "===== DEPLOYMENT SUCCESS ====="
         }
 
         failure {
-            echo 'Build FAILED - check logs'
+            echo "===== BUILD FAILED ====="
         }
     }
 }
