@@ -1,6 +1,6 @@
-FROM python:3.9-slim
+FROM python:3.10
     WORKDIR /app
     COPY . .
     RUN pip install -r requirements.txt
-    EXPOSE 5001
+    EXPOSE 5000
     CMD ["python","userresource.py"]
