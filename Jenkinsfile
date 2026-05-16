@@ -23,8 +23,12 @@ pipeline {
             steps {
                 script {
                     echo "======== stopping old container ========"
-                    bat 'docker stop userresource-container || exit 0'
-                    bat 'docker rm userresource-container || exit 0'
+
+                    bat '''
+                    docker stop userresource-container
+                    docker rm userresource-container
+                    exit /b 0
+                    '''
                 }
             }
         }
@@ -33,19 +37,33 @@ pipeline {
             steps {
                 script {
                     echo "======== running new container ========"
-                    bat 'docker run -d -p 5000:5000 --name userresource-container userresource-image:latest'
+
+                    bat '''
+                    docker run -d -p 5000:5000 --name userresource-container userresource-image:latest
+                    '''
                 }
+            }
+        }
+
+        stage("Check Running Containers") {
+            steps {
+                bat 'docker ps'
             }
         }
     }
 
     post {
+
         success {
             echo "======== Deployment Successful ========"
         }
 
         failure {
             echo "======== Deployment Failed ========"
+        }
+
+        always {
+            echo "======== Pipeline Finished ========"
         }
     }
 }
