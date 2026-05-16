@@ -3,67 +3,22 @@ pipeline {
 
     stages {
 
-        stage("Checkout") {
+        stage('Checkout') {
             steps {
-                echo "======== executing checkout ========"
-                checkout scm
+                git 'https://github.com/katigarcharitha-cloud/flask-Docker-app.git'
             }
         }
 
-        stage("Build Docker Image") {
+        stage('Build Docker Image') {
             steps {
-                script {
-                    echo "======== building docker image ========"
-                    bat 'docker build -t userresource-image:latest .'
-                }
+                bat 'docker build -t my-angular-app .'
             }
         }
 
-        stage("Stop Old Container") {
+        stage('Run Container') {
             steps {
-                script {
-                    echo "======== stopping old container ========"
-
-                    bat '''
-                    docker stop userresource-container
-                    docker rm userresource-container
-                    exit /b 0
-                    '''
-                }
+                bat 'docker run -d -p 8081:80 my-angular-app'
             }
-        }
-
-        stage("Deploy Docker Container") {
-            steps {
-                script {
-                    echo "======== running new container ========"
-
-                    bat '''
-                    docker run -d -p 5000:5000 --name userresource-container userresource-image:latest
-                    '''
-                }
-            }
-        }
-
-        stage("Check Running Containers") {
-            steps {
-                bat 'docker ps'
-            }
-        }
-    }
-
-    post {
-
-        success {
-            echo "======== Deployment Successful ========"
-        }
-
-        failure {
-            echo "======== Deployment Failed ========"
-        }
-
-        always {
-            echo "======== Pipeline Finished ========"
         }
     }
 }
