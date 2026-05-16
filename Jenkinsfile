@@ -19,23 +19,29 @@ pipeline {
 
         stage("Build Docker Image") {
             steps {
-                echo "===== Building Docker image ====="
-                bat 'docker build -t userresource-app:latest .'
+                script {
+                    echo "===== Building Docker Image ====="
+                    bat 'docker build -t userresource-app:latest .'
+                }
             }
         }
 
         stage("Stop Old Container") {
             steps {
-                echo "===== Stopping old container ====="
-                bat 'docker stop user-container || exit 0'
-                bat 'docker rm user-container || exit 0'
+                script {
+                    echo "===== Stopping old container ====="
+                    bat 'docker stop userresource-container || exit 0'
+                    bat 'docker rm userresource-container || exit 0'
+                }
             }
         }
 
         stage("Run Container") {
             steps {
-                echo "===== Running new container ====="
-                bat 'docker run -d -p 8081:5000 --name user-container userresource-app:latest'
+                script {
+                    echo "===== Running new container ====="
+                    bat 'docker run -d -p 5000:5000 --name userresource-container userresource-app:latest'
+                }
             }
         }
     }
