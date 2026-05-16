@@ -3,22 +3,46 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/katigarcharitha-cloud/flask-Docker-app.git'
+                git branch: 'main', url: 'https://github.com/your-repo.git'
+            }
+        }
+
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t my-angular-app .'
+                sh 'docker build -t sqlite-app .'
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                sh 'docker stop app || true'
+                sh 'docker rm app || true'
             }
         }
 
         stage('Run Container') {
             steps {
-                bat 'docker run -d -p 8081:80 my-angular-app'
+                sh 'docker run -d -p 5000:5000 --name app sqlite-app'
             }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Build and Deployment SUCCESS'
+        }
+
+        failure {
+            echo 'Build FAILED - check logs'
         }
     }
 }
