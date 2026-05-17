@@ -1,36 +1,26 @@
-pipeline {
+pipeline{
     agent any
-
-    stages {
-
-        stage("Checkout") {
-            steps {
+    stages{
+        stage("checkout"){
+            steps{
+                echo "========executing checkout========"
                 checkout scm
             }
-        }
-
-        stage("Check Files") {
-            steps {
-                bat 'dir'
+        }            
+        stage("build docker image"){
+            steps{
+                script{
+                  echo "========executing settingup environment========"
+                  bat 'docker build -t flask-jenkins-sqlite-image:latest .'
+                }
             }
         }
-
-        stage("Build Docker Image") {
-            steps {
-                bat 'docker build -t flask-sqlite-app .'
-            }
-        }
-
-        stage("Stop Old Container") {
-            steps {
-                bat 'docker stop flask-container || exit 0'
-                bat 'docker rm flask-container || exit 0'
-            }
-        }
-
-        stage("Run Container") {
-            steps {
-                bat 'docker run -d -p 8083:5000 --name flask-container flask-sqlite-app'
+        
+        stage("Deploy Docker Container"){
+            steps{
+                script{
+                  bat 'docker run -d -p 9091:5000 --name flask-sqlite-container flask-jenkins-sqlite-image:latest'
+                }
             }
         }
     }
