@@ -30,7 +30,7 @@ pipeline {
 
         stage("Run Container") {
             steps {
-                bat 'docker run -d -p 8083:5001 --name flask-container flask-sqlite-app'
+                bat 'docker run -d -p 8083:5000 --name flask-container flask-sqlite-app'
             }
         }
     }
